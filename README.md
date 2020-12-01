@@ -1,1 +1,3 @@
 # advent-of-code-2020
+
+This year I'm going to take on the Advent of Code challenge, and spend it trying to learn Go.  While I've gotten very comfortable with C# and .NET over the years, I've fallen out of habit when it comes to other languages, and picking up a new one like Go seems like a good direction.  I'll try to take each day's challenges as they come, and while there may be shortcuts that I'll smooth out as I go, I intend to drop the previous day's challenge to focus on the next so I don't end up endlessly refactoring the same basic method.  That does mean that the first few challenges especially will look super rough and amatuerish, but that's exactly what it's always going to look like when learning a new language.
