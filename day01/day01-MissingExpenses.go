@@ -9,8 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello World!")
-
 	expensesReport := "expenses.txt"
 
 	expensesFile, err := os.Open(expensesReport)
@@ -78,40 +76,3 @@ func calculateExpenses(expensesList []int, target int, sum int, pos int, depth i
 
 	return 0
 }
-
-// func calculateTwoExpenses(expensesList []int) {
-// 	for i := 0; i < len(expensesList); i++ {
-// 		for j := i + 1; j < len(expensesList); j++ {
-// 			var result = expensesList[i] + expensesList[j]
-
-// 			if result == 2020 {
-// 				fmt.Println("Result 1:", expensesList[i])
-// 				fmt.Println("Result 2:", expensesList[j])
-
-// 				var finalExpense = expensesList[i] * expensesList[j]
-
-// 				fmt.Println("Final expense 1 is:", finalExpense)
-// 			}
-// 		}
-// 	}
-// }
-
-// func calculateThreeExpenses(expensesList []int) {
-// 	for i := 0; i < len(expensesList); i++ {
-// 		for j := i + 1; j < len(expensesList); j++ {
-// 			for k := j + 1; k < len(expensesList); k++ {
-// 				var result = expensesList[i] + expensesList[j] + expensesList[k]
-
-// 				if result == 2020 {
-// 					fmt.Println("Result 1:", expensesList[i])
-// 					fmt.Println("Result 2:", expensesList[j])
-// 					fmt.Println("Result 3:", expensesList[k])
-
-// 					var finalExpense = expensesList[i] * expensesList[j] * expensesList[k]
-
-// 					fmt.Println("Final expense 2 is:", finalExpense)
-// 				}
-// 			}
-// 		}
-// 	}
-// }
