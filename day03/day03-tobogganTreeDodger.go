@@ -25,6 +25,10 @@ func main() {
 	// Right 1, down 2.
 	treesHit5 := checkTrees(treeMap, 1, 2)
 
+	// could replace this with an array of structs which holds the horizontal/vertical movement
+	// for each, and track the number of collisions made along each route in another array.
+	// Multiply the final result before returning.  Keeps it independent AND efficient
+
 	fmt.Println("Number of trees hit 1:", treesHit1)
 	fmt.Println("Number of trees hit 2:", treesHit2)
 	fmt.Println("Number of trees hit 3:", treesHit3)
