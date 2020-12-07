@@ -16,7 +16,6 @@ type containedBag struct {
 
 type bagData struct {
 	outerBags []string
-	// description string // might not be needed?
 	innerBags []containedBag
 }
 
@@ -44,38 +43,7 @@ func main() {
 		newBagContents := strings.Split(ruleData[1], ",")
 
 		newBag := bagRules[newBagDesc]
-
-		if strings.HasPrefix(newBagContents[0], "no") {
-			bagRules[newBagDesc] = newBag
-			continue
-		}
-
-		newBag.innerBags = make([]containedBag, len(newBagContents))
-
-		outerBag := []string{newBagDesc}
-
-		for i := 0; i < len(newBagContents); i++ {
-			var innerBag containedBag
-			innerBagDetails := strings.Split(strings.TrimSpace(newBagContents[i]), " ")
-
-			innerBagName := innerBagDetails[1] + " " + innerBagDetails[2]
-
-			innerBag.description = innerBagName
-			innerBag.number, err = strconv.Atoi(innerBagDetails[0])
-
-			if err != nil {
-				log.Fatal(err)
-				return
-			}
-
-			newBag.innerBags[i] = innerBag
-
-			// Ensures that we add the new reference to the outer bag
-			// without overwriting existing data
-			existingBag := bagRules[innerBagName]
-			existingBag.outerBags = append(existingBag.outerBags, outerBag...)
-			bagRules[innerBagName] = existingBag
-		}
+		newBag.innerBags = populateInnerBags(bagRules, newBagContents, newBagDesc)
 
 		bagRules[newBagDesc] = newBag
 	}
@@ -84,16 +52,49 @@ func main() {
 	goldBag := bagRules["shiny gold"]
 
 	searchOutsideBags(bagsContainingGoldBag, bagRules, goldBag.outerBags)
-
 	fmt.Println("Number of bags containing 1 or more gold bags:", len(bagsContainingGoldBag))
 
 	bagsInsideGoldBag := searchInsideBags(bagRules, goldBag.innerBags)
-
 	// We deduct one so we don't count the shiny gold bag itself
 	bagsInsideGoldBag--
-
 	fmt.Println("Number of bags contained inside 1 gold bag:", bagsInsideGoldBag)
+}
 
+func populateInnerBags(bagRules map[string]bagData, newBagContents []string, newBagDesc string) []containedBag {
+	innerBags := make([]containedBag, len(newBagContents))
+
+	if strings.HasPrefix(newBagContents[0], "no") {
+		return innerBags
+	}
+
+	outerBag := []string{newBagDesc}
+
+	for i := 0; i < len(newBagContents); i++ {
+		var innerBag containedBag
+		innerBagDetails := strings.Split(strings.TrimSpace(newBagContents[i]), " ")
+
+		innerBagName := innerBagDetails[1] + " " + innerBagDetails[2]
+
+		innerBag.description = innerBagName
+		numOfBags, err := strconv.Atoi(innerBagDetails[0])
+
+		if err != nil {
+			log.Fatal(err)
+			continue
+		}
+
+		innerBag.number = numOfBags
+
+		innerBags[i] = innerBag
+
+		// Ensures that we add the new reference to the outer bag
+		// without overwriting existing data
+		existingBag := bagRules[innerBagName]
+		existingBag.outerBags = append(existingBag.outerBags, outerBag...)
+		bagRules[innerBagName] = existingBag
+	}
+
+	return innerBags
 }
 
 func searchOutsideBags(bagsVisited map[string]bool, bagRules map[string]bagData, outerBags []string) {
