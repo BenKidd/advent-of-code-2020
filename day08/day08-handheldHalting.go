@@ -15,6 +15,11 @@ type instructionSet struct {
 	visited     bool
 }
 
+type checkpoint struct {
+	position         int
+	accumulatedValue int
+}
+
 type accReturn struct {
 	foundEnd         bool
 	accumulatedValue int
@@ -30,20 +35,21 @@ func main() {
 	toggleableInstructions := findInstructionsToToggle(instructions)
 
 	for i := 0; i < len(toggleableInstructions); i++ {
-		toggleInstruction(instructions, toggleableInstructions[i])
+		toggleInstruction(instructions, toggleableInstructions[i].position)
+		instructions[toggleableInstructions[i].position].visited = false
 
 		accumulatedValue = 0
 
 		resetVisitedInstructions(instructions)
 
-		result := findValidAccumulator(instructions)
+		result := findValidAccumulator2(instructions, toggleableInstructions[i])
 
 		if result.foundEnd {
 			accumulatedValue = result.accumulatedValue
 			break
 		}
 
-		toggleInstruction(instructions, toggleableInstructions[i])
+		toggleInstruction(instructions, toggleableInstructions[i].position)
 	}
 
 	fmt.Println("Accumulated total:", accumulatedValue)
@@ -83,6 +89,47 @@ func processInputFile(inputFile string) []instructionSet {
 	}
 
 	return instructions
+}
+
+func findValidAccumulator2(instructions []instructionSet, startingPoint checkpoint) accReturn {
+	curPos := startingPoint.position
+	oldPos := curPos
+
+	var resultSet accReturn
+	resultSet.accumulatedValue = startingPoint.accumulatedValue
+
+	for {
+		if curPos >= len(instructions) {
+			resultSet.foundEnd = true
+			break
+		}
+
+		curInstruction := instructions[curPos]
+
+		if curInstruction.visited {
+			break
+		}
+
+		curInstruction.visited = true
+		oldPos = curPos
+
+		if curInstruction.instruction == "nop" {
+			curPos++
+		}
+
+		if curInstruction.instruction == "acc" {
+			resultSet.accumulatedValue += curInstruction.value
+			curPos++
+		}
+
+		if curInstruction.instruction == "jmp" {
+			curPos += curInstruction.value
+		}
+
+		instructions[oldPos] = curInstruction
+	}
+
+	return resultSet
 }
 
 func findValidAccumulator(instructions []instructionSet) accReturn {
@@ -125,10 +172,12 @@ func findValidAccumulator(instructions []instructionSet) accReturn {
 	return resultSet
 }
 
-func findInstructionsToToggle(instructions []instructionSet) []int {
+func findInstructionsToToggle(instructions []instructionSet) []checkpoint {
 	curPos := 0
 	oldPos := 0
-	instructionsToToggle := make([]int, 0)
+	accumulatedValue := 0
+
+	instructionsToToggle := make([]checkpoint, 0)
 
 	for {
 		curInstruction := instructions[curPos]
@@ -141,16 +190,19 @@ func findInstructionsToToggle(instructions []instructionSet) []int {
 		oldPos = curPos
 
 		if curInstruction.instruction == "nop" {
-			instructionsToToggle = append(instructionsToToggle, curPos)
+			newCheckpoint := checkpoint{position: curPos, accumulatedValue: accumulatedValue}
+			instructionsToToggle = append(instructionsToToggle, newCheckpoint)
 			curPos++
 		}
 
 		if curInstruction.instruction == "acc" {
+			accumulatedValue += curInstruction.value
 			curPos++
 		}
 
 		if curInstruction.instruction == "jmp" {
-			instructionsToToggle = append(instructionsToToggle, curPos)
+			newCheckpoint := checkpoint{position: curPos, accumulatedValue: accumulatedValue}
+			instructionsToToggle = append(instructionsToToggle, newCheckpoint)
 			curPos += curInstruction.value
 		}
 
